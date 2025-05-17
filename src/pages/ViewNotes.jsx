@@ -4,10 +4,18 @@ import NoteCard from "../components/NoteCard";
 import { StickyNote, Trash2 } from "lucide-react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchNotes } from "../store/slices/notesSlice";
+
 const ViewNotes = () => {
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
   const [error, setError] = useState(null);
+  
+  useEffect(() => {
+    dispatch(fetchNotes());
+  }, [dispatch]);
 
   const loadNotes = async () => {
     setLoading(true);

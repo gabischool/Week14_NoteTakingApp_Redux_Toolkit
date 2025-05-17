@@ -9,4 +9,5 @@ export const noteSchema = z.object({
       .string()
       .min(1, { message: "Content is required" })
       .max(500, { message: "Content cannot exceed 500 characters" }),
+      categoryId: z.string().min(1, "Category is required"),
   });
