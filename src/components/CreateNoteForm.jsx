@@ -6,8 +6,11 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { noteSchema } from "../schema/notes";
-
+import { useSelector, useDispatch } from "react-redux";
+import { addNotes } from "../store/slices/noteSlice";
 const CreateNoteForm = () => {
+  //initialize dispatch
+  const dispatch = useDispatch() 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
@@ -27,7 +30,8 @@ const CreateNoteForm = () => {
   const sendToTheServer = async (data) => {
     setIsSubmitting(true);
     try {
-      await axios.post(`http://localhost:3001/api/notes`, data);
+      
+        await dispatch(addNotes(data)).unwrap();
       // Briefly show success state
       setTimeout(() => {
         navigate("/notes");
@@ -62,7 +66,7 @@ const CreateNoteForm = () => {
         <input
           id="title"
           type="text"
-          className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 ${
+          className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 ${ 
             errors.title ? "border-red-500" : "border-gray-300"
           }`}
           placeholder="Note Title"

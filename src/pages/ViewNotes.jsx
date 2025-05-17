@@ -4,20 +4,26 @@ import NoteCard from "../components/NoteCard";
 import { StickyNote, Trash2 } from "lucide-react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import CreateNote from "./CreateNote";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchNotes } from "../store/slices/noteSlice";
+
 const ViewNotes = () => {
-  const [notes, setNotes] = useState([]);
+  const dispatch = useDispatch()
+  const {notes, error:notesError, status} = useSelector((state) => state.notes)
+  
+  // const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  // const [error, setError] = useState(null);
 
   const loadNotes = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("http://localhost:3001/api/notes");
-      setNotes(response.data);
-      setError(null);
+      // const response = await axios.get("http://localhost:3001/api/notes");
+      await dispatch(fetchNotes()).unwrap();
     } catch (err) {
       console.error("Error fetching notes:", err);
-      setError("Failed to load notes. Please try again.");
+      
     } finally {
       setLoading(false);
     }
@@ -51,10 +57,10 @@ const ViewNotes = () => {
     );
   }
 
-  if (error) {
+  if (notesError) {
     return (
       <div className="text-center py-10">
-        <p className="text-red-500 mb-4">{error}</p>
+        <p className="text-red-500 mb-4">{notesError}</p>
         <button
           onClick={loadNotes}
           className="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 transition-colors"
