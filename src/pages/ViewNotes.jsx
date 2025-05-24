@@ -1,31 +1,66 @@
 import { useState, useEffect } from "react";
 import NoteCard from "../components/NoteCard";
-
+import  {fetchNotes,DeleteNote,UpdateNote}  from "../store/slices/notesSlice";
+import { useDispatch, useSelector } from "react-redux";
 import { StickyNote, Trash2 } from "lucide-react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+
+
+
 const ViewNotes = () => {
-  const [notes, setNotes] = useState([]);
+  const dispatch = useDispatch();
+
+  
+
+  const { notes, status, error } = useSelector((state) => state.note)
+   console.log(notes)
+  // const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+ 
 
   const loadNotes = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("http://localhost:3001/api/notes");
-      setNotes(response.data);
-      setError(null);
+     
+      await dispatch(fetchNotes()).unwrap();
+
     } catch (err) {
       console.error("Error fetching notes:", err);
-      setError("Failed to load notes. Please try again.");
     } finally {
       setLoading(false);
     }
   };
-
+    
+  
   useEffect(() => {
     loadNotes();
+    const handleNoteDelete = (NoteId) =>{
+    dispatch (DeleteNote (NoteId));
+  }
+
   }, []);
+  
+  //update note
+  const handleNoteUpdate = (NoteId) => {
+    dispatch(UpdateNote(NoteId)); 
+  }       
+  const handleUpdate = async (id) => {
+    try {
+      const response = await axios.put(`http://localhost:5000/notes/${id}`);
+      const noteData = response.data;
+      const updatedNote = {
+        ...noteData,
+        title: "Updated Title",
+        content: "Updated Content",
+      };
+      await dispatch(UpdateNote({ id, updatedData: updatedNote }));
+    } catch (err) {
+      console.error("Error updating note:", err);
+      alert("Failed to update note. Please try again.");
+    }      
+  };
+  
 
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this note?")) {
@@ -33,14 +68,19 @@ const ViewNotes = () => {
     }
 
     try {
-      await axios.delete(`http://localhost:3001/api/notes/${id}`);
-      setNotes(notes.filter((note) => note.id !== id));
+     await dispatch(DeleteNote(id))
+      
     } catch (err) {
       console.error("Error deleting note:", err);
       alert("Failed to delete note. Please try again.");
+      
     }
   };
 
+   
+  
+
+   
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -98,7 +138,12 @@ const ViewNotes = () => {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {notes.map((note) => (
-          <NoteCard key={note.id} note={note} onDelete={handleDelete} />
+          <NoteCard key={note.id} note={note} onDelete={handleDelete} 
+          onUpdate={handleUpdate}     
+          
+          
+          />
+
         ))}
       </div>
     </div>
