@@ -1,6 +1,7 @@
 import { Trash2 } from "lucide-react";
+import { MdBrowserUpdated } from "react-icons/md";
 
-const NoteCard = ({ note, onDelete }) => {
+const NoteCard = ({ note, onDelete,onUpdate }) => {
   const { id, title, content } = note;
 
   return (
@@ -37,6 +38,14 @@ const NoteCard = ({ note, onDelete }) => {
             className="text-gray-500 hover:text-red-500 p-1 rounded-full hover:bg-red-50 transition-colors"
           >
             <Trash2 size={18} />
+          </button>
+ 
+          <button   
+            onClick={() => onUpdate(id)}
+            aria-label="Update note"
+            className="text-gray-500 hover:text-blue-500 p-1 rounded-full hover:bg-blue-50 transition-colors"     
+          >
+            <MdBrowserUpdated size = {18} />      
           </button>
         </div>
         <div className="flex-grow mb-2">
