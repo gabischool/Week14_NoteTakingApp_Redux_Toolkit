@@ -31,10 +31,7 @@ const ViewNotes = () => {
 
   useEffect(() => {
     loadNotes();
-    const handleDelete = (noteId) => {
-    dispatch(deleteNote(noteId))
-    }
-  }, []);
+  }, [dispatch]);
 
   const handleDelete = async (id) => {
  
@@ -43,7 +40,7 @@ const ViewNotes = () => {
     }
 
     try {
-         dispatch(deleteNote(id))
+       await dispatch(deleteNote(id)).unwrap()
 
     } catch (err) {
       console.error("Error deleting note:", err);

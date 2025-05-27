@@ -35,12 +35,12 @@ export const addNotes = createAsyncThunk(
 
 //Delete Note
 export const deleteNote = createAsyncThunk(
-    'nonte/deleteNote',
+    'notes/deleteNote',
     async(id) => {
         try {
             
          await axios.delete(`${BASE_URL}/notes/${id}`)
-         console.log("data", id)
+        return id
 
         }catch (error) {
             console.log(error)
@@ -51,7 +51,7 @@ export const deleteNote = createAsyncThunk(
 
 //Edit Note 
 export const editNote = createAsyncThunk (
-    "note//editNote",
+    "notes/editNote",
     async(editData) => {
         try {
             const response = await axios.put(`${BASE_URL}/notes`, editData, {
@@ -102,7 +102,8 @@ const notesSlice = createSlice({
             })
             .addCase(deleteNote.fulfilled, (state, action) => {
                 state.status = "succeeded"
-                state.notes = state.notes.filter((note) => note.id !== action.payload)
+                state.notes = state.notes.filter((note) => note.id !== action.payload
+                )
             })
             .addCase(deleteNote.rejected, (state, action) => {
                 state.error = action.error.payload
