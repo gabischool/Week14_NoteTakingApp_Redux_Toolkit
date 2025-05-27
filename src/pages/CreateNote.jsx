@@ -1,4 +1,5 @@
 import CreateNoteForm from "../components/CreateNoteForm";
+import axios from "axios";
 
 const CreateNote = () => {
   return (
