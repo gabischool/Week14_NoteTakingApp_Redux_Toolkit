@@ -1,15 +1,14 @@
-// ✅ CreateNoteForm.jsx — Redux Toolkit Integrated
+// ✅ components/EditNoteForm.jsx
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Save } from "lucide-react";
-
 import { noteSchema } from "../schema/notes";
-import { addNote } from "../store/slices/notesSlice";
+import { updateNote } from "../store/slices/notesSlice";
 
-const CreateNoteForm = () => {
+const EditNoteForm = ({ existingNote }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -22,33 +21,31 @@ const CreateNoteForm = () => {
   } = useForm({
     resolver: zodResolver(noteSchema),
     defaultValues: {
-      title: "",
-      content: "",
+      title: existingNote?.title || "",
+      content: existingNote?.content || "",
     },
   });
 
-  // ✅ Submit form using Redux Toolkit
+  useEffect(() => {
+    reset({
+      title: existingNote?.title || "",
+      content: existingNote?.content || "",
+    });
+  }, [existingNote, reset]);
+
   const onSubmit = async (data) => {
     setIsSubmitting(true);
-    try {
-      const resultAction = await dispatch(addNote(data));
+    const result = await dispatch(
+      updateNote({ id: existingNote.id, updatedData: data })
+    );
 
-      if (addNote.fulfilled.match(resultAction)) {
-        // ✅ Navigate to notes list on success
-        setTimeout(() => {
-          navigate("/notes");
-        }, 500);
-        reset();
-      } else {
-        // ❌ Handle server error from rejected thunk
-        alert("Failed to create note: " + resultAction.payload);
-      }
-    } catch (err) {
-      console.error("Unexpected error:", err);
-      alert("An unexpected error occurred. Please try again.");
-    } finally {
-      setIsSubmitting(false);
+    if (updateNote.fulfilled.match(result)) {
+      navigate("/notes");
+    } else {
+      alert("Failed to update note. Try again.");
     }
+
+    setIsSubmitting(false);
   };
 
   return (
@@ -57,12 +54,14 @@ const CreateNoteForm = () => {
       onSubmit={handleSubmit(onSubmit)}
     >
       <h2 className="text-xl font-semibold mb-6 text-gray-800">
-        Create a New Note
+        Edit Note
       </h2>
 
-      {/* 🔤 Title Input */}
       <div className="mb-4">
-        <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+        <label
+          htmlFor="title"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
           Title
         </label>
         <input
@@ -79,9 +78,11 @@ const CreateNoteForm = () => {
         )}
       </div>
 
-      {/* 📝 Content Input */}
       <div className="mb-6">
-        <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-1">
+        <label
+          htmlFor="content"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
           Content
         </label>
         <textarea
@@ -98,17 +99,16 @@ const CreateNoteForm = () => {
         )}
       </div>
 
-      {/* 💾 Submit Button */}
       <button
         type="submit"
         disabled={isSubmitting}
         className="w-full bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-4 rounded-md transition-colors duration-200 flex items-center justify-center gap-2 disabled:opacity-70"
       >
         <Save size={18} />
-        <span>{isSubmitting ? "Saving..." : "Save Note"}</span>
+        <span>{isSubmitting ? "Saving..." : "Update Note"}</span>
       </button>
     </form>
   );
 };
 
-export default CreateNoteForm;
+export default EditNoteForm;
