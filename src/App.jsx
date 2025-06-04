@@ -1,7 +1,9 @@
+// ✅ App.jsx
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import CreateNote from './pages/CreateNote';
 import ViewNotes from './pages/ViewNotes';
+import EditNote from './pages/EditNote'; // 🆕 Import EditNote Page
 
 function App() {
   return (
@@ -12,6 +14,7 @@ function App() {
           <Routes>
             <Route path="/" element={<CreateNote />} />
             <Route path="/notes" element={<ViewNotes />} />
+            <Route path="/edit/:id" element={<EditNote />} /> {/* 🆕 Edit Note Route */}
           </Routes>
         </main>
       </div>
