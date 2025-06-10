@@ -2,9 +2,12 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import CreateNote from './pages/CreateNote';
 import ViewNotes from './pages/ViewNotes';
+import { Provider } from 'react-redux';
+import { store } from './store';
 
 function App() {
   return (
+  <Provider store={store}>
     <Router>
       <div className="min-h-screen bg-gray-50">
         <Header />
@@ -16,6 +19,7 @@ function App() {
         </main>
       </div>
     </Router>
+    </Provider>
   );
 }
 
