@@ -2,13 +2,14 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Save } from "lucide-react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
 import { noteSchema } from "../schema/notes";
+import { useDispatch, useSelector } from "react-redux";
+import { addNote } from "../store/slices/notesSlice";
+
 
 const CreateNoteForm = () => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const {
@@ -23,30 +24,23 @@ const CreateNoteForm = () => {
       content: "",
     },
   });
+ 
+   const isSubmitting = useSelector((state) => state.notes.loading);
 
-  const sendToTheServer = async (data) => {
-    setIsSubmitting(true);
+  const onSubmit = async (data) => {
     try {
-      await axios.post(`http://localhost:3001/api/notes`, data);
-      // Briefly show success state
-      setTimeout(() => {
-        navigate("/notes");
-      }, 500);
+      await dispatch(addNote(data)).unwrap();
+      reset();
+      navigate("/notes");
     } catch (error) {
-      console.error("Failed to create note:", error);
       alert("Failed to create note. Please try again.");
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
   return (
     <form
       className="bg-white p-6 rounded-lg shadow-sm max-w-2xl mx-auto"
-      onSubmit={handleSubmit(async (data) => {
-        await sendToTheServer(data);
-        reset();
-      })}
+      onSubmit={handleSubmit(onSubmit)}
     >
       <h2 className="text-xl font-semibold mb-6 text-gray-800">
         Create a New Note
