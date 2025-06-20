@@ -24,19 +24,15 @@ const CreateNoteForm = () => {
     },
   });
 
-  const sendToTheServer = async (data) => {
-    setIsSubmitting(true);
-    try {
-      await axios.post(`http://localhost:3001/api/notes`, data);
-      // Briefly show success state
-      setTimeout(() => {
-        navigate("/notes");
-      }, 500);
+ 
+
+  const onsend = async (data) => {
+    console.log("data", data);
+    try{
+      await dispatch (createNote(data));
+      reset();
     } catch (error) {
-      console.error("Failed to create note:", error);
-      alert("Failed to create note. Please try again.");
-    } finally {
-      setIsSubmitting(false);
+      console.log(error);
     }
   };
 

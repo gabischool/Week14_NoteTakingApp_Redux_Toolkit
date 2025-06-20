@@ -1,9 +1,13 @@
 import { useState, useEffect } from "react";
 import NoteCard from "../components/NoteCard";
-
+import { useDispatch, useSelector } from "react-redux";
+import notesslice, {deleteNote} from "../store/slices/notesSlice";
+import  addNote  from "../store/slices/notesSlice";
+import { fetchnotes}  from "../store/slices/notesSlice";
 import { StickyNote, Trash2 } from "lucide-react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+
 const ViewNotes = () => {
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
