@@ -4,6 +4,7 @@ import { notesUrl } from "../notesUrl";
 import axios from 'axios';
 
 
+
 // step A : set up initial state
 const initialState = {
   notes: [],
@@ -50,11 +51,12 @@ extraReducers: (builder) => {
 }
 
 // step 2 : create async thunk for the API
-const notesSlice = "http://localhost:3001/api";
+const notesSlice= "http://localhost:3001/api";
 
 //fetchnotes
 export const fetchNotes = createAsyncThunk('notes/fetchNotes', async () => {
-  const response = await axios.get(notesUrl);
+  const response = await axios.get(`${notesSlice}/notes`);
+  console.log("NOTES notesSlice", response.data);
   return response.data;
 });
 //addnote
@@ -65,8 +67,8 @@ export const createNote = createAsyncThunk('notes/createNote', async (noteData) 
 
 //updateNotes
 export const deleteNote = createAsyncThunk('notes/deleteNote', async (id) => {
-  await axios.delete(`${notesUrl}/${id}`);
-  return noteid; // Return the id to remove it from the state
+  await axios.delete('${notesUrl}/${noteId}');
+  return noteId; // Return the id to remove it from the state
 });
 
 // step 3 : export slice/reducer
