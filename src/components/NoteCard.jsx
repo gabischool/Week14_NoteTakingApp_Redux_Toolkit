@@ -1,7 +1,9 @@
 import { Trash2 } from "lucide-react";
 
+
 const NoteCard = ({ note, onDelete }) => {
   const { id, title, content } = note;
+  
 
   return (
     <div

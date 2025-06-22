@@ -1,0 +1,1 @@
+export const notesUrl = "http://localhost:3001/api";
