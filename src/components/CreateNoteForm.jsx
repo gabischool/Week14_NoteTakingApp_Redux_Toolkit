@@ -2,14 +2,16 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Save } from "lucide-react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { noteSchema } from "../schema/notes";
+import { useDispatch } from "react-redux";
+import { addNote } from "../Store/slices/notesSlice";
 
 const CreateNoteForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const {
     register,
@@ -27,8 +29,7 @@ const CreateNoteForm = () => {
   const sendToTheServer = async (data) => {
     setIsSubmitting(true);
     try {
-      await axios.post(`http://localhost:3001/api/notes`, data);
-      // Briefly show success state
+      await dispatch(addNote(data)).unwrap();
       setTimeout(() => {
         navigate("/notes");
       }, 500);
@@ -53,10 +54,7 @@ const CreateNoteForm = () => {
       </h2>
 
       <div className="mb-4">
-        <label
-          htmlFor="title"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
+        <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
           Title
         </label>
         <input
@@ -74,10 +72,7 @@ const CreateNoteForm = () => {
       </div>
 
       <div className="mb-6">
-        <label
-          htmlFor="content"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
+        <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-1">
           Content
         </label>
         <textarea
