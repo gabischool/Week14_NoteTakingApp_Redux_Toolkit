@@ -2,13 +2,14 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Save } from "lucide-react";
-import axios from "axios";
+import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
 import { noteSchema } from "../schema/notes";
+import { addNote } from "../store/slices/notesSlice";
 
 const CreateNoteForm = () => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const dispatch = useDispatch();
+  const { loading, error } = useSelector((state) => state.notes);
   const navigate = useNavigate();
 
   const {
@@ -25,28 +26,26 @@ const CreateNoteForm = () => {
   });
 
   const sendToTheServer = async (data) => {
-    setIsSubmitting(true);
     try {
-      await axios.post(`http://localhost:3001/api/notes`, data);
+      const result = await dispatch(addNote(data));
       // Briefly show success state
-      setTimeout(() => {
-        navigate("/notes");
-      }, 500);
+
+      if (addNote.fulfilled.match(result)) {
+        reset();
+        setTimeout(() => {
+          navigate("/notes");
+        }, 500);
+      }
     } catch (error) {
       console.error("Failed to create note:", error);
       alert("Failed to create note. Please try again.");
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
   return (
     <form
       className="bg-white p-6 rounded-lg shadow-sm max-w-2xl mx-auto"
-      onSubmit={handleSubmit(async (data) => {
-        await sendToTheServer(data);
-        reset();
-      })}
+      onSubmit={handleSubmit(sendToTheServer)}
     >
       <h2 className="text-xl font-semibold mb-6 text-gray-800">
         Create a New Note
@@ -96,12 +95,13 @@ const CreateNoteForm = () => {
 
       <button
         type="submit"
-        disabled={isSubmitting}
+        disabled={loading}
         className="w-full bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-4 rounded-md transition-colors duration-200 flex items-center justify-center gap-2 disabled:opacity-70"
       >
         <Save size={18} />
-        <span>{isSubmitting ? "Saving..." : "Save Note"}</span>
+        <span>{loading ? "Saving..." : "Save Note"}</span>
       </button>
+      {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
     </form>
   );
 };
