@@ -1,42 +1,42 @@
 import { useState, useEffect } from "react";
 import NoteCard from "../components/NoteCard";
-
 import { StickyNote, Trash2 } from "lucide-react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux"
+import { fetchNotes, deleteNote } from "../store/slices/notesSlices"
+
+
 const ViewNotes = () => {
-  const [notes, setNotes] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  
+
+  const dispatch = useDispatch()
+
+  const { notes, loading, error } = useSelector((state) => state.notes)
 
   const loadNotes = async () => {
-    setLoading(true);
     try {
-      const response = await axios.get("http://localhost:3001/api/notes");
-      setNotes(response.data);
-      setError(null);
-    } catch (err) {
+      await dispatch(fetchNotes()).unwrap()
+   } catch (err) {
+     console.log(err);
       console.error("Error fetching notes:", err);
-      setError("Failed to load notes. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+    } 
   };
 
   useEffect(() => {
     loadNotes();
   }, []);
 
+  
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this note?")) {
       return;
     }
 
     try {
-      await axios.delete(`http://localhost:3001/api/notes/${id}`);
-      setNotes(notes.filter((note) => note.id !== id));
+      await dispatch(deleteNote(id)).unwrap()
     } catch (err) {
-      console.error("Error deleting note:", err);
+      console.log("Error deleting note:", err);
       alert("Failed to delete note. Please try again.");
     }
   };
