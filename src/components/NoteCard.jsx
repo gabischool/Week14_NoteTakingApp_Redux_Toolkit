@@ -1,6 +1,6 @@
-import { Trash2 } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 
-const NoteCard = ({ note, onDelete }) => {
+const NoteCard = ({ note, onDelete, onEdit }) => {
   const { id, title, content } = note;
 
   return (
@@ -29,15 +29,21 @@ const NoteCard = ({ note, onDelete }) => {
       >
         <div className="flex justify-between items-start mb-3">
           <h3 className="text-2xl font-light mb-2" style={{ fontWeight: 400 }}>
-            {title}
-          </h3>
+            {title}  </h3>
           <button
             onClick={() => onDelete(id)}
             aria-label="Delete note"
-            className="text-gray-500 hover:text-red-500 p-1 rounded-full hover:bg-red-50 transition-colors"
-          >
+            className="text-gray-500 hover:text-red-500 p-1 rounded-full hover:bg-red-50 transition-colors" >
             <Trash2 size={18} />
           </button>
+
+             <button onClick={() => onEdit(id)} aria-label="onEdite note " className="text-gray-500 hover:text-red-500 p-1 rounded-full hover:bg-red-50 transition-colors" >
+         <Pencil  size={18} /> </button> 
+         
+ 
+
+
+
         </div>
         <div className="flex-grow mb-2">
           <p

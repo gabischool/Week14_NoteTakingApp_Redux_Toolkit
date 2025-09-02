@@ -1,25 +1,32 @@
 import { useState, useEffect } from "react";
 import NoteCard from "../components/NoteCard";
+import { useNavigate } from "react-router-dom";
 
 import { StickyNote, Trash2 } from "lucide-react";
-import axios from "axios";
 import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { noteAll, noteUpdate } from "../store/slices/noteSlice";
+import { deleteNotes } from "../store/slices/noteSlice";
+
 const ViewNotes = () => {
-  const [notes, setNotes] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+
+  const dispatch = useDispatch();
+
+  const { notes, status, error } = useSelector((state) => state.notes);
+  console.log("Note", notes);
 
   const loadNotes = async () => {
-    setLoading(true);
+
     try {
-      const response = await axios.get("http://localhost:3001/api/notes");
-      setNotes(response.data);
-      setError(null);
+    
+
+      await dispatch(noteAll()).unwrap();
     } catch (err) {
       console.error("Error fetching notes:", err);
-      setError("Failed to load notes. Please try again.");
+
     } finally {
-      setLoading(false);
+
     }
   };
 
@@ -33,15 +40,30 @@ const ViewNotes = () => {
     }
 
     try {
-      await axios.delete(`http://localhost:3001/api/notes/${id}`);
-      setNotes(notes.filter((note) => note.id !== id));
+      await dispatch(deleteNotes(id)).unwrap();
+
+
     } catch (err) {
       console.error("Error deleting note:", err);
       alert("Failed to delete note. Please try again.");
     }
   };
 
-  if (loading) {
+  const handleEdit = async (id) => {
+    const title = prompt("Enter new title:");
+    const content = prompt("Enter new content:");
+
+    if (!title || !content) return; // user canceled
+
+    try {
+      await dispatch(noteUpdate({ id, title, content })).unwrap();
+    } catch (err) {
+      console.error("Error updating note:", err);
+      alert("Failed to update note. Please try again.");
+    }
+  };
+
+  if (status == "loading") {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-pulse text-yellow-500">
@@ -98,7 +120,12 @@ const ViewNotes = () => {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {notes.map((note) => (
-          <NoteCard key={note.id} note={note} onDelete={handleDelete} />
+          <NoteCard
+            key={note.id}
+            note={note}
+            onDelete={handleDelete}
+            onEdit={handleEdit}
+          />
         ))}
       </div>
     </div>
