@@ -1,6 +1,6 @@
-import { Trash2 } from "lucide-react";
+import { Trash, Trash2, RefreshCcw } from "lucide-react";
 
-const NoteCard = ({ note, onDelete }) => {
+const NoteCard = ({ note, onDelete, onUpdate}) => {
   const { id, title, content } = note;
 
   return (
@@ -38,7 +38,26 @@ const NoteCard = ({ note, onDelete }) => {
           >
             <Trash2 size={18} />
           </button>
+          
         </div>
+
+
+
+<div className="flex justify-between items-start mb-3">
+          <h3 className="text-2xl font-light mb-2" style={{ fontWeight: 400 }}>
+            {title}
+          </h3>
+          <button
+          onClick={() => onUpdate({ id, title, content })}
+            aria-label="Update note"
+            className="text-gray-500 hover:text-red-500 p-1 rounded-full hover:bg-red- transition-colors"
+          >
+            <RefreshCcw size={18} />
+          </button>
+          
+        </div>
+
+
         <div className="flex-grow mb-2">
           <p
             className="text-base whitespace-pre-line"
