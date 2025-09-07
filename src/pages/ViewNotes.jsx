@@ -1,47 +1,26 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import NoteCard from "../components/NoteCard";
-
-import { StickyNote, Trash2 } from "lucide-react";
-import axios from "axios";
+import { StickyNote } from "lucide-react";
 import { Link } from "react-router-dom";
-const ViewNotes = () => {
-  const [notes, setNotes] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+import { useSelector, useDispatch } from "react-redux";
+import { fetchNotes, deleteNote } from "../store/slice/slice";
 
-  const loadNotes = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.get("http://localhost:3001/api/notes");
-      setNotes(response.data);
-      setError(null);
-    } catch (err) {
-      console.error("Error fetching notes:", err);
-      setError("Failed to load notes. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+const ViewNotes = () => {
+  const dispatch = useDispatch();
+  const { notes, status, error } = useSelector((state) => state.notes);
 
   useEffect(() => {
-    loadNotes();
-  }, []);
+    dispatch(fetchNotes());
+  }, [dispatch]);
 
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this note?")) {
       return;
     }
-
-    try {
-      await axios.delete(`http://localhost:3001/api/notes/${id}`);
-      setNotes(notes.filter((note) => note.id !== id));
-    } catch (err) {
-      console.error("Error deleting note:", err);
-      alert("Failed to delete note. Please try again.");
-    }
+    await dispatch(deleteNote(id));
   };
 
-  if (loading) {
+  if (status === "loading") {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-pulse text-yellow-500">
@@ -56,7 +35,7 @@ const ViewNotes = () => {
       <div className="text-center py-10">
         <p className="text-red-500 mb-4">{error}</p>
         <button
-          onClick={loadNotes}
+          onClick={() => dispatch(fetchNotes())}
           className="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 transition-colors"
         >
           Try Again
