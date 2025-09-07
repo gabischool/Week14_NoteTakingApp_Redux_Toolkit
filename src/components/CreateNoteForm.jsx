@@ -1,15 +1,17 @@
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Save } from "lucide-react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
 import { noteSchema } from "../schema/notes";
+import { fetchsend } from '../store/slice/slice';
+import { useDispatch } from "react-redux";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const CreateNoteForm = () => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const {
     register,
@@ -27,11 +29,13 @@ const CreateNoteForm = () => {
   const sendToTheServer = async (data) => {
     setIsSubmitting(true);
     try {
-      await axios.post(`http://localhost:3001/api/notes`, data);
-      // Briefly show success state
+      await dispatch(fetchsend(data)).unwrap();
+      setShowSuccess(true);
+      reset();
+      // Redirect to notes page after 2 seconds
       setTimeout(() => {
-        navigate("/notes");
-      }, 500);
+        navigate('/notes');
+      }, 2000);
     } catch (error) {
       console.error("Failed to create note:", error);
       alert("Failed to create note. Please try again.");
@@ -45,12 +49,19 @@ const CreateNoteForm = () => {
       className="bg-white p-6 rounded-lg shadow-sm max-w-2xl mx-auto"
       onSubmit={handleSubmit(async (data) => {
         await sendToTheServer(data);
-        reset();
       })}
     >
       <h2 className="text-xl font-semibold mb-6 text-gray-800">
         Create a New Note
       </h2>
+
+      {showSuccess && (
+        <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-md">
+          <p className="text-green-800 text-sm">
+            ✅ Note created successfully! Redirecting to your notes...
+          </p>
+        </div>
+      )}
 
       <div className="mb-4">
         <label
