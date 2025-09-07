@@ -7,9 +7,26 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { noteSchema } from "../schema/notes";
 
+import { useSelector, useDispatch } from "react-redux"
+import { Addnote } from "../Store/slices/noteSlice"
+
+
+
+import { transform } from "typescript";
+
+
 const CreateNoteForm = () => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const navigate = useNavigate();
+
+ 
+
+  const dispatch = useDispatch() 
+  const { notes, status, error } = useSelector((state) => state.notes)
+
+
+   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+  
 
   const {
     register,
@@ -25,19 +42,20 @@ const CreateNoteForm = () => {
   });
 
   const sendToTheServer = async (data) => {
-    setIsSubmitting(true);
+    
     try {
-      await axios.post(`http://localhost:3001/api/notes`, data);
+      await dispatch(Addnote(data)).unwrap();
       // Briefly show success state
-      setTimeout(() => {
-        navigate("/notes");
-      }, 500);
+
+
+      // setTimeout(() => {
+      //   navigate("/notes");
+      // }, 500);
     } catch (error) {
+     
       console.error("Failed to create note:", error);
       alert("Failed to create note. Please try again.");
-    } finally {
-      setIsSubmitting(false);
-    }
+    } 
   };
 
   return (
@@ -83,7 +101,7 @@ const CreateNoteForm = () => {
         <textarea
           id="content"
           rows={6}
-          className={`w-full px-3 py-2 border rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-yellow-400 ${
+          className={`w-full px-3 py-2  rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-yellow-400 ${
             errors.content ? "border-red-500" : "border-gray-300"
           }`}
           placeholder="Write your note here..."
