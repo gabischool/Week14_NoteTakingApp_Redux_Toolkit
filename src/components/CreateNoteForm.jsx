@@ -32,7 +32,7 @@ const CreateNoteForm = () => {
     try {
       await dispatch(addnotes(data)).unwrap();
      
-      // Briefly show success state
+      
       setTimeout(() => {
         reset();
         navigate("/notes");
@@ -43,13 +43,7 @@ const CreateNoteForm = () => {
     } finally{
       setIsSubmitting(false)
     }
-  //   try {
-  //     await dispatch(deletenote(id)).unwrap();
-  //   } catch (err) {
-  //     console.error("Error deleting note:", err);
-  //     alert("Failed to delete note. Please try again.");
-  //   }
-  // }
+ 
   };
   
 

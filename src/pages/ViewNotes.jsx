@@ -6,14 +6,12 @@ import { deletenotes } from "../store/slices/noteslice";
 
 
 import { StickyNote, Trash2 } from "lucide-react";
-import axios from "axios";
+
 import { Link } from "react-router-dom";
 const ViewNotes = () => {
   const dispatch=useDispatch();
   const {notes , status , error} =useSelector ((state)=>state.notes)
-  // const [notes, setNotes] = useState([]);
-  // const [loading, setLoading] = useState(true);
-  // const [error, setError] = useState(null);
+  
 
 
   const loadNotes = async () => {
@@ -43,7 +41,7 @@ const ViewNotes = () => {
 
     try {
       await dispatch(deletenotes(id)).unwrap();
-      // await axios.delete(`http://localhost:3001/api/notes/${id}`);
+     
    
     } catch (err) {
       console.log("Error deleting note:", err);
