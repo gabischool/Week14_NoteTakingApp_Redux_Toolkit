@@ -1,55 +1,55 @@
 import { useState, useEffect } from "react";
 import NoteCard from "../components/NoteCard";
-import { useSelector , useDispatch} from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { fetchnotes } from "../store/slices/noteslice";
 import { deletenotes } from "../store/slices/noteslice";
 
 
 import { StickyNote, Trash2 } from "lucide-react";
 
+
+
 import { Link } from "react-router-dom";
 const ViewNotes = () => {
-  const dispatch=useDispatch();
-  const {notes , status , error} =useSelector ((state)=>state.notes)
-  
+  const dispatch = useDispatch();
+  const { notes, status, error } = useSelector((state) => state.notes)
+
 
 
   const loadNotes = async () => {
-    
+
     try {
-      await dispatch(fetchnotes()).unwrap();      
+      await dispatch(fetchnotes()).unwrap();
     } catch (err) {
       console.log("Error fetching notes:", err);
 
       setError("Failed to load notes. Please try again.");
-      
-    } 
-    finally {
-    setLoading(false);
+
     }
-    
+
+
   };
 
   useEffect(() => {
-   
+    loadNotes();
   }, []);
 
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this note?")) {
       return;
     }
-
+  
     try {
       await dispatch(deletenotes(id)).unwrap();
-     
-   
+
+
     } catch (err) {
       console.log("Error deleting note:", err);
-      
+
     }
   };
 
-  if (status === "loading" ){
+  if (status === "loading") {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-pulse text-yellow-500">
@@ -59,7 +59,7 @@ const ViewNotes = () => {
     );
   }
 
-  if (status ==="failed") {
+  if (status === "failed") {
     return (
       <div className="text-center py-10">
         <p className="text-red-500 mb-4">{error}</p>
