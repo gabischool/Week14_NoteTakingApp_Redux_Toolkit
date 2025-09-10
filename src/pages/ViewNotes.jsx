@@ -1,26 +1,33 @@
 import { useState, useEffect } from "react";
 import NoteCard from "../components/NoteCard";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchnotes } from "../store/slices/noteslice";
+import { deletenotes } from "../store/slices/noteslice";
+
 
 import { StickyNote, Trash2 } from "lucide-react";
-import axios from "axios";
+
+
+
 import { Link } from "react-router-dom";
 const ViewNotes = () => {
-  const [notes, setNotes] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const dispatch = useDispatch();
+  const { notes, status, error } = useSelector((state) => state.notes)
+
+
 
   const loadNotes = async () => {
-    setLoading(true);
+
     try {
-      const response = await axios.get("http://localhost:3001/api/notes");
-      setNotes(response.data);
-      setError(null);
+      await dispatch(fetchnotes()).unwrap();
     } catch (err) {
-      console.error("Error fetching notes:", err);
+      console.log("Error fetching notes:", err);
+
       setError("Failed to load notes. Please try again.");
-    } finally {
-      setLoading(false);
+
     }
+
+
   };
 
   useEffect(() => {
@@ -31,17 +38,18 @@ const ViewNotes = () => {
     if (!window.confirm("Are you sure you want to delete this note?")) {
       return;
     }
-
+  
     try {
-      await axios.delete(`http://localhost:3001/api/notes/${id}`);
-      setNotes(notes.filter((note) => note.id !== id));
+      await dispatch(deletenotes(id)).unwrap();
+
+
     } catch (err) {
-      console.error("Error deleting note:", err);
-      alert("Failed to delete note. Please try again.");
+      console.log("Error deleting note:", err);
+
     }
   };
 
-  if (loading) {
+  if (status === "loading") {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-pulse text-yellow-500">
@@ -51,7 +59,7 @@ const ViewNotes = () => {
     );
   }
 
-  if (error) {
+  if (status === "failed") {
     return (
       <div className="text-center py-10">
         <p className="text-red-500 mb-4">{error}</p>
@@ -106,3 +114,7 @@ const ViewNotes = () => {
 };
 
 export default ViewNotes;
+
+
+
+
