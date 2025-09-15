@@ -3,23 +3,20 @@ import NoteCard from "../components/NoteCard";
 
 import { StickyNote, Trash2 } from "lucide-react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import fetchNotes from "../store/slices/noteSlices"
+import { deleteNotes } from "../store/slices/noteSlices";
+import { useDispatch, useSelector } from "react-redux";
 const ViewNotes = () => {
-  const [notes, setNotes] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
+const dispatch = useDispatch()
+const navigate = useNavigate()
+const {error, notes, status} = useSelector((state) => state.notes)
   const loadNotes = async () => {
-    setLoading(true);
+  
     try {
-      const response = await axios.get("http://localhost:3001/api/notes");
-      setNotes(response.data);
-      setError(null);
+      await dispatch(fetchNotes()).unwrap()
     } catch (err) {
-      console.error("Error fetching notes:", err);
-      setError("Failed to load notes. Please try again.");
-    } finally {
-      setLoading(false);
+
     }
   };
 
@@ -33,15 +30,14 @@ const ViewNotes = () => {
     }
 
     try {
-      await axios.delete(`http://localhost:3001/api/notes/${id}`);
-      setNotes(notes.filter((note) => note.id !== id));
+      await dispatch(deleteNotes(id)).unwrap()
+    
     } catch (err) {
-      console.error("Error deleting note:", err);
-      alert("Failed to delete note. Please try again.");
+      console.log("delete error", err)
     }
   };
 
-  if (loading) {
+  if ( status === "loading") {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-pulse text-yellow-500">
