@@ -1,44 +1,27 @@
-import { useState, useEffect } from "react";
-import NoteCard from "../components/NoteCard";
-
-import { StickyNote, Trash2 } from "lucide-react";
-import axios from "axios";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { StickyNote } from "lucide-react";
 import { Link } from "react-router-dom";
+
+import NoteCard from "../components/NoteCard";
+import { fetchNotes, deleteNote } from "../store/slices/notesSlice";
+
 const ViewNotes = () => {
-  const [notes, setNotes] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const dispatch = useDispatch();
 
-  const loadNotes = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.get("http://localhost:3001/api/notes");
-      setNotes(response.data);
-      setError(null);
-    } catch (err) {
-      console.error("Error fetching notes:", err);
-      setError("Failed to load notes. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Pull notes state from Redux
+  const { notes, loading, error } = useSelector((state) => state.notes);
 
+  // Load notes when component mounts
   useEffect(() => {
-    loadNotes();
-  }, []);
+    dispatch(fetchNotes());
+  }, [dispatch]);
 
-  const handleDelete = async (id) => {
+  const handleDelete = (id) => {
     if (!window.confirm("Are you sure you want to delete this note?")) {
       return;
     }
-
-    try {
-      await axios.delete(`http://localhost:3001/api/notes/${id}`);
-      setNotes(notes.filter((note) => note.id !== id));
-    } catch (err) {
-      console.error("Error deleting note:", err);
-      alert("Failed to delete note. Please try again.");
-    }
+    dispatch(deleteNote(id));
   };
 
   if (loading) {
@@ -56,7 +39,7 @@ const ViewNotes = () => {
       <div className="text-center py-10">
         <p className="text-red-500 mb-4">{error}</p>
         <button
-          onClick={loadNotes}
+          onClick={() => dispatch(fetchNotes())}
           className="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 transition-colors"
         >
           Try Again
