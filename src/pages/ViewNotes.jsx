@@ -2,25 +2,26 @@ import { useState, useEffect } from "react";
 import NoteCard from "../components/NoteCard";
 
 import { StickyNote, Trash2 } from "lucide-react";
-import axios from "axios";
+
 import { Link } from "react-router-dom";
+
+// ustaad halkan waxaan ku calaamadaystay qaybaha aan ku dari doono state management Ai ha uga shakinin
+import {fetchNotes, deleteNote} from '../store/slices/notesSlice'; 
+import { useDispatch, useSelector } from 'react-redux'; 
+
 const ViewNotes = () => {
-  const [notes, setNotes] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+ 
+  const dispatch = useDispatch();
+  const { notes, status, error } = useSelector((state) => state.notes);
 
   const loadNotes = async () => {
-    setLoading(true);
+  
     try {
-      const response = await axios.get("http://localhost:3001/api/notes");
-      setNotes(response.data);
-      setError(null);
+       dispatch(fetchNotes()).unwrap();
     } catch (err) {
       console.error("Error fetching notes:", err);
-      setError("Failed to load notes. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+  
+    } 
   };
 
   useEffect(() => {
@@ -33,15 +34,15 @@ const ViewNotes = () => {
     }
 
     try {
-      await axios.delete(`http://localhost:3001/api/notes/${id}`);
-      setNotes(notes.filter((note) => note.id !== id));
+      dispatch(deleteNote(id)).unwrap();
+      loadNotes();
     } catch (err) {
       console.error("Error deleting note:", err);
       alert("Failed to delete note. Please try again.");
     }
   };
 
-  if (loading) {
+  if (status == "loading") {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-pulse text-yellow-500">
