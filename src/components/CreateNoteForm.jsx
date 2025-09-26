@@ -7,9 +7,17 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { noteSchema } from "../schema/notes";
 
+// ustaad halkan waxaan ku calaamadaystay qaybaha aan ku dari doono state management Ai ha uga shakinin
+
+import { useDispatch, useSelector } from 'react-redux'; 
+import {addNote} from '../store/slices/notesSlice'; 
+
 const CreateNoteForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
+
+  const dispatch = useDispatch();
+
 
   const {
     register,
@@ -27,7 +35,7 @@ const CreateNoteForm = () => {
   const sendToTheServer = async (data) => {
     setIsSubmitting(true);
     try {
-      await axios.post(`http://localhost:3001/api/notes`, data);
+      dispatch(addNote(data)).unwrap();
       // Briefly show success state
       setTimeout(() => {
         navigate("/notes");
