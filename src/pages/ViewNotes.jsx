@@ -1,18 +1,26 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import NoteCard from "../components/NoteCard";
 
 import { StickyNote, Trash2 } from "lucide-react";
-import axios from "axios";
+//import axios from "axios";
 import { Link } from "react-router-dom";
-const ViewNotes = () => {
-  const [notes, setNotes] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+import { useDispatch, useSelector} from "react-redux";
+import {fetchNote} from "../store/slices/noteSlice"
 
+const ViewNotes = () => {
+
+  // Step 1: initialize the useDisparth
+  const dispatch = useDispatch()
+  //const [notes, setNotes] = useState([]);
+  //const [loading, setLoading] = useState(true);
+  //const [error, setError] = useState(null);
+
+  const { notes, error, status} = useSelector((state) => state.notes)
+  console.log("NOTE", notes)
   const loadNotes = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("http://localhost:3001/api/notes");
+      //const response = await axios.get("http://localhost:3001/api/notes");
       setNotes(response.data);
       setError(null);
     } catch (err) {
@@ -23,8 +31,12 @@ const ViewNotes = () => {
     }
   };
 
+  //useEffect(() => {
+    //loadNotes();
+  //}, []);
+
   useEffect(() => {
-    loadNotes();
+    dispatch(fetchNote()).unwrap()
   }, []);
 
   const handleDelete = async (id) => {
@@ -33,7 +45,7 @@ const ViewNotes = () => {
     }
 
     try {
-      await axios.delete(`http://localhost:3001/api/notes/${id}`);
+      //await axios.delete(`http://localhost:3001/api/notes/${id}`);
       setNotes(notes.filter((note) => note.id !== id));
     } catch (err) {
       console.error("Error deleting note:", err);
@@ -41,7 +53,7 @@ const ViewNotes = () => {
     }
   };
 
-  if (loading) {
+  /*if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-pulse text-yellow-500">
@@ -49,7 +61,7 @@ const ViewNotes = () => {
         </div>
       </div>
     );
-  }
+  }*/
 
   if (error) {
     return (
