@@ -1,6 +1,12 @@
 import CreateNoteForm from "../components/CreateNoteForm";
+import { useDispatch } from "react-redux";
+import { addNote } from "../store/slice/noteSlice";
 
 const CreateNote = () => {
+  const dispatch =useDispatch();
+  const handleAdd =(note)=>{
+    dispatch(addNote(note));
+  };
   return (
     <div className="max-w-4xl mx-auto">
       <div className="mb-8 text-center">
