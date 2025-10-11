@@ -1,31 +1,19 @@
 import { useState, useEffect } from "react";
 import NoteCard from "../components/NoteCard";
-
+import { Delete } from "../store/slices/notesSlice";
 import { StickyNote, Trash2 } from "lucide-react";
-import axios from "axios";
 import { Link } from "react-router-dom";
-const ViewNotes = () => {
-  const [notes, setNotes] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+import { fetchNotes } from "../store/slices/notesSlice";
+import { useDispatch, useSelector } from "react-redux";
 
-  const loadNotes = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.get("http://localhost:3001/api/notes");
-      setNotes(response.data);
-      setError(null);
-    } catch (err) {
-      console.error("Error fetching notes:", err);
-      setError("Failed to load notes. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+const ViewNotes = () => {
+  const dispatch = useDispatch();
+  const { notes, error, loading } = useSelector((state) => state.notes);
+  console.log(notes);
 
   useEffect(() => {
-    loadNotes();
-  }, []);
+    dispatch(fetchNotes());
+  }, [dispatch]);
 
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this note?")) {
@@ -41,15 +29,15 @@ const ViewNotes = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-pulse text-yellow-500">
-          <StickyNote size={48} />
-        </div>
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div className="flex justify-center items-center h-64">
+  //       <div className="animate-pulse text-yellow-500">
+  //         <StickyNote size={48} />
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   if (error) {
     return (
@@ -65,27 +53,27 @@ const ViewNotes = () => {
     );
   }
 
-  if (notes.length === 0) {
-    return (
-      <div className="text-center py-16">
-        <div className="flex justify-center mb-4 text-yellow-400">
-          <StickyNote size={64} />
-        </div>
-        <h2 className="text-xl font-semibold text-gray-700 mb-2">
-          No Notes Yet
-        </h2>
-        <p className="text-gray-500 mb-6">
-          Create your first note to get started
-        </p>
-        <Link
-          to="/"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 transition-colors"
-        >
-          Create a Note
-        </Link>
-      </div>
-    );
-  }
+  // if (notes.length === 0) {
+  //   return (
+  //     <div className="text-center py-16">
+  //       <div className="flex justify-center mb-4 text-yellow-400">
+  //         <StickyNote size={64} />
+  //       </div>
+  //       <h2 className="text-xl font-semibold text-gray-700 mb-2">
+  //         No Notes Yet
+  //       </h2>
+  //       <p className="text-gray-500 mb-6">
+  //         Create your first note to get started
+  //       </p>
+  //       <Link
+  //         to="/"
+  //         className="inline-flex items-center gap-2 px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 transition-colors"
+  //       >
+  //         Create a Note
+  //       </Link>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="max-w-6xl mx-auto">
