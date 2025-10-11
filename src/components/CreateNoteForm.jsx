@@ -2,13 +2,16 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Save } from "lucide-react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
 import { noteSchema } from "../schema/notes";
+import React, { useState } from "react";
+
+import { useDispatch } from "react-redux";
+import { addNotes } from "../store/slices/notesSlice";
 
 const CreateNoteForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const {
@@ -25,18 +28,12 @@ const CreateNoteForm = () => {
   });
 
   const sendToTheServer = async (data) => {
-    setIsSubmitting(true);
     try {
-      await axios.post(`http://localhost:3001/api/notes`, data);
-      // Briefly show success state
-      setTimeout(() => {
-        navigate("/notes");
-      }, 500);
+      dispatch(addNotes(data)).unwrap();
+
+      navigate("/notes");
     } catch (error) {
-      console.error("Failed to create note:", error);
-      alert("Failed to create note. Please try again.");
-    } finally {
-      setIsSubmitting(false);
+      console.log(error);
     }
   };
 

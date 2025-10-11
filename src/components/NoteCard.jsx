@@ -2,7 +2,7 @@ import { Trash2 } from "lucide-react";
 
 const NoteCard = ({ note, onDelete }) => {
   const { id, title, content } = note;
-
+  console.log(note);
   return (
     <div
       className="relative"
