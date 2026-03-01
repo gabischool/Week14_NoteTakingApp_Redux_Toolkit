@@ -2,14 +2,19 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Save } from "lucide-react";
-import axios from "axios";
+
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { noteSchema } from "../schema/notes";
+import { addNotes } from "../store/slices/noteSlices";
+import { useDispatch } from "react-redux";
 
 const CreateNoteForm = () => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  console.log("check")
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
 
   const {
     register,
@@ -26,30 +31,36 @@ const CreateNoteForm = () => {
 
   const sendToTheServer = async (data) => {
     setIsSubmitting(true);
+    setSubmitSuccess(false);
     try {
-      await axios.post(`http://localhost:3001/api/notes`, data);
+      await dispatch(addNotes(data))
       // Briefly show success state
+      
+    setSubmitSuccess(true);
+      
       setTimeout(() => {
         navigate("/notes");
       }, 500);
     } catch (error) {
       console.error("Failed to create note:", error);
       alert("Failed to create note. Please try again.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+   
+  }
+  finally {
+    setIsSubmitting(false)
+  }
+}
 
   return (
     <form
-      className="bg-white p-6 rounded-lg shadow-sm max-w-2xl mx-auto"
+      className="bg-white mt-8 p-6 rounded-lg shadow-sm max-w-2xl mx-auto"
       onSubmit={handleSubmit(async (data) => {
         await sendToTheServer(data);
         reset();
       })}
     >
       <h2 className="text-xl font-semibold mb-6 text-gray-800">
-        Create a New Note
+        Create a New Form
       </h2>
 
       <div className="mb-4">
@@ -96,14 +107,15 @@ const CreateNoteForm = () => {
 
       <button
         type="submit"
-        disabled={isSubmitting}
+        
         className="w-full bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-4 rounded-md transition-colors duration-200 flex items-center justify-center gap-2 disabled:opacity-70"
+        disabled={isSubmitting}
       >
         <Save size={18} />
         <span>{isSubmitting ? "Saving..." : "Save Note"}</span>
       </button>
     </form>
   );
-};
+ }
 
 export default CreateNoteForm;
