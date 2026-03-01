@@ -4,25 +4,24 @@ import NoteCard from "../components/NoteCard";
 import { StickyNote, Trash2 } from "lucide-react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchNotes } from "../store/slices/noteSlices";
 const ViewNotes = () => {
-  const [notes, setNotes] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  
+ const dispatch = useDispatch();
+ const {notes, error: notesError , status} = useSelector( (state) => state.notes)
 
-  const loadNotes = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.get("http://localhost:3001/api/notes");
-      setNotes(response.data);
-      setError(null);
-    } catch (err) {
-      console.error("Error fetching notes:", err);
-      setError("Failed to load notes. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+ const loadNotes = async () => { 
+  try {
+  
+  await dispatch(fetchNotes() .unwrap())
+  }
+  catch(error) {
+console.log(error)
 
+  }
+  
+ }
   useEffect(() => {
     loadNotes();
   }, []);
@@ -34,14 +33,14 @@ const ViewNotes = () => {
 
     try {
       await axios.delete(`http://localhost:3001/api/notes/${id}`);
-      setNotes(notes.filter((note) => note.id !== id));
+      
     } catch (err) {
       console.error("Error deleting note:", err);
       alert("Failed to delete note. Please try again.");
     }
   };
 
-  if (loading) {
+  if (status === "loading") {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-pulse text-yellow-500">
@@ -51,10 +50,10 @@ const ViewNotes = () => {
     );
   }
 
-  if (error) {
+  if (notesError) {
     return (
       <div className="text-center py-10">
-        <p className="text-red-500 mb-4">{error}</p>
+        <p className="text-red-500 mb-4">{notesError}</p>
         <button
           onClick={loadNotes}
           className="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 transition-colors"
