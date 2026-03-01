@@ -4,24 +4,30 @@ import NoteCard from "../components/NoteCard";
 import { StickyNote, Trash2 } from "lucide-react";
 import axios from "axios";
 import { Link } from "react-router-dom";
-const ViewNotes = () => {
+
+
+
+
+  const ViewNotes = () => {
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  const loadNotes = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.get("http://localhost:3001/api/notes");
-      setNotes(response.data);
-      setError(null);
-    } catch (err) {
-      console.error("Error fetching notes:", err);
-      setError("Failed to load notes. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  
+  
+   
+      const loadNotes = async () => {
+      setLoading(true);
+     try {
+    const response = await axios.get("http://localhost:3001/api/notes");
+    setNotes(response.data);
+    setError(null);
+  } catch (err) {
+    console.error("Error fetching notes:", err);
+    setError("Failed to load notes. Please try again.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     loadNotes();
