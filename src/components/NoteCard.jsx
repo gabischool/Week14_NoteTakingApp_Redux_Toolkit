@@ -32,7 +32,7 @@ const NoteCard = ({ note, onDelete }) => {
             {title}
           </h3>
           <button
-            onClick={() => onDelete(id)}
+            onClick={() => onDelete( note.id)}
             aria-label="Delete note"
             className="text-gray-500 hover:text-red-500 p-1 rounded-full hover:bg-red-50 transition-colors"
           >

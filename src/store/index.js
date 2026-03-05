@@ -3,6 +3,7 @@ import  noteReducer from "./slices/notesSlice";
 
 const reducer = {
     note: noteReducer,
+    delete: noteReducer
 
 }
 
