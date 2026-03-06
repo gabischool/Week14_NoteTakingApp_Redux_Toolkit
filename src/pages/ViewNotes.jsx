@@ -1,19 +1,25 @@
 import { useState, useEffect } from "react";
 import NoteCard from "../components/NoteCard";
-
+import { useSelector, useDispatch } from "react-redux";
+import { fetchNotes } from "../store/slices/notesSlice";
 import { StickyNote, Trash2 } from "lucide-react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+
 const ViewNotes = () => {
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+   const {note ,onDelete} = useSelector((state) => state.note);
+
+  const dispatch = useDispatch();
 
   const loadNotes = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("http://localhost:3001/api/notes");
-      setNotes(response.data);
+      
+      
+      setNotes(dispatch(fetchNotes()).unwrap());
       setError(null);
     } catch (err) {
       console.error("Error fetching notes:", err);
@@ -24,7 +30,11 @@ const ViewNotes = () => {
   };
 
   useEffect(() => {
-    loadNotes();
+    dispatch(fetchNotes()).unwrap().then((data) => setNotes(data)).catch((err) => {
+      console.error("Error fetching notes:", err);
+      setError("Failed to load notes. Please try again.");
+    }
+    ).finally(() => setLoading(false));
   }, []);
 
   const handleDelete = async (id) => {
@@ -33,10 +43,12 @@ const ViewNotes = () => {
     }
 
     try {
-      await axios.delete(`http://localhost:3001/api/notes/${id}`);
+    
+      dispatch=(onDelete(id));
       setNotes(notes.filter((note) => note.id !== id));
     } catch (err) {
-      console.error("Error deleting note:", err);
+      
+    
       alert("Failed to delete note. Please try again.");
     }
   };
@@ -98,7 +110,11 @@ const ViewNotes = () => {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {notes.map((note) => (
-          <NoteCard key={note.id} note={note} onDelete={handleDelete} />
+          <NoteCard
+            key={note.id}
+            note={note}
+            onDelete={handleDelete}
+          />
         ))}
       </div>
     </div>

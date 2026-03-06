@@ -12,7 +12,7 @@ const CreateNote = () => {
         </p>
       </div>
 
-      <CreateNoteForm />
+    <CreateNoteForm />
     </div>
   );
 };
