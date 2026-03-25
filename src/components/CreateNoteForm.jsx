@@ -6,8 +6,11 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { noteSchema } from "../schema/notes";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchNotes } from "../store/Slices/noteSlice";
 
 const CreateNoteForm = () => {
+  const dispatch = useDispatch() // initialize dispatch
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
@@ -24,21 +27,7 @@ const CreateNoteForm = () => {
     },
   });
 
-  const sendToTheServer = async (data) => {
-    setIsSubmitting(true);
-    try {
-      await axios.post(`http://localhost:3001/api/notes`, data);
-      // Briefly show success state
-      setTimeout(() => {
-        navigate("/notes");
-      }, 500);
-    } catch (error) {
-      console.error("Failed to create note:", error);
-      alert("Failed to create note. Please try again.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  
 
   return (
     <form
