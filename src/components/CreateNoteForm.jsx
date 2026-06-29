@@ -1,44 +1,37 @@
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Save } from "lucide-react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { noteSchema } from "../schema/notes";
+import { useDispatch } from "react-redux";
+import { addNoteThunk } from "../store/slices/noteSlices";
 
 const CreateNoteForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm({
+  const { register, handleSubmit, reset, formState: { errors } } = useForm({
     resolver: zodResolver(noteSchema),
-    defaultValues: {
-      title: "",
-      content: "",
-    },
+    defaultValues: { title: "", content: "" },
   });
 
   const sendToTheServer = async (data) => {
     setIsSubmitting(true);
     try {
-      await axios.post(`http://localhost:3001/api/notes`, data);
-      // Briefly show success state
+      await dispatch(addNoteThunk(data)).unwrap();
       setTimeout(() => {
         navigate("/notes");
       }, 500);
     } catch (error) {
       console.error("Failed to create note:", error);
-      alert("Failed to create note. Please try again.");
+      alert("Failed to create note.");
     } finally {
       setIsSubmitting(false);
     }
-  };
+  }; 
 
   return (
     <form
@@ -52,11 +45,9 @@ const CreateNoteForm = () => {
         Create a New Note
       </h2>
 
+      {/* Title Input */}
       <div className="mb-4">
-        <label
-          htmlFor="title"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
+        <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
           Title
         </label>
         <input
@@ -73,11 +64,9 @@ const CreateNoteForm = () => {
         )}
       </div>
 
+      {/* Content Input */}
       <div className="mb-6">
-        <label
-          htmlFor="content"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
+        <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-1">
           Content
         </label>
         <textarea
@@ -94,6 +83,7 @@ const CreateNoteForm = () => {
         )}
       </div>
 
+      {/* Submit Button */}
       <button
         type="submit"
         disabled={isSubmitting}
